@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  fileservices-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fileservices-api
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - file_uploads:/app/uploads
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/files/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  file_uploads:
+    driver: local
