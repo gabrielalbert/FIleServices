@@ -1,12 +1,15 @@
 using FileServices.Api.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "FileServices", Version = "v1" });
+});
 // Configure file upload settings
 builder.Services.Configure<IISServerOptions>(options =>
 {
@@ -17,15 +20,14 @@ builder.Services.Configure<IISServerOptions>(options =>
 builder.Services.AddScoped<IFileService, FileService>();
 
 // Configure CORS
-builder.Services.AddCors(options =>
+builder.Services.AddCors(options => options.AddPolicy("Cors", policy =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+    policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .WithExposedHeaders("*")
+    .AllowAnyHeader();
+}));
 
 var app = builder.Build();
 
@@ -33,19 +35,18 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
 }
-
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("../swagger/v1/swagger.json", "FileServices v1"));
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+app.UseCors("Cors");
 app.UseAuthorization();
 app.MapControllers();
 
 // Ensure uploads directory exists
 var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-//if (!Directory.Exists(uploadsPath))
-//{
-//    Directory.CreateDirectory(uploadsPath);
-//}
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
 
 app.Run();
