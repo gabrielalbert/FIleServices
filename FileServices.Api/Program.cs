@@ -10,7 +10,7 @@ builder.Services.AddSwaggerGen();
 // Configure file upload settings
 builder.Services.Configure<IISServerOptions>(options =>
 {
-    options.MaxRequestBodySize = 100 * 1024 * 1024; // 100 MB
+    options.MaxRequestBodySize = 2*100 * 1024 * 1024; // 100 MB
 });
 
 // Add file service
@@ -32,10 +32,10 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
