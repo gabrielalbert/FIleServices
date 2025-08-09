@@ -43,9 +43,9 @@ app.MapControllers();
 
 // Ensure uploads directory exists
 var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-if (!Directory.Exists(uploadsPath))
-{
-    Directory.CreateDirectory(uploadsPath);
-}
+//if (!Directory.Exists(uploadsPath))
+//{
+//    Directory.CreateDirectory(uploadsPath);
+//}
 
 app.Run();
